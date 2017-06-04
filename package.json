@@ -4,7 +4,7 @@
   "description": "Application lets user search for flights from location A to location B on chosen date (+/- 2 days).",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": "git+https://github.com/bartij/flight-search.git",

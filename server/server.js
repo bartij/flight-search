@@ -1,5 +1,6 @@
 const express = require('express');
-const bodyParser = reuire('body-parser');
+const bodyParser = require('body-parser');
+const path = require('path');
 const app = express();
 const port = 3000;
 const router = require('./api/router');
@@ -9,7 +10,7 @@ app.use(bodyParser.json());
 router(app);
 
 app.use('/', function (req, res) {
-    res.sendFile(path.resolve('client/index.html'));
+    res.sendFile(path.resolve('client/', 'index.html'));
 });
 
 app.listen(port, function(error) {
