@@ -1,0 +1,1 @@
+Application lets user search for flights from location A to location B on chosen date (+/- 2 days).

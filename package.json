@@ -4,12 +4,10 @@
   "description": "Application lets user search for flights from location A to location B on chosen date (+/- 2 days).",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bartij/flight-search.git"
-  },
+  "repository": "git+https://github.com/bartij/flight-search.git",
   "keywords": [
     "flight",
     "search"
@@ -19,5 +17,10 @@
   "bugs": {
     "url": "https://github.com/bartij/flight-search/issues"
   },
-  "homepage": "https://github.com/bartij/flight-search#readme"
+  "homepage": "https://github.com/bartij/flight-search#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "nodemon": "^1.11.0"
+  }
 }
