@@ -1,94 +1,17 @@
-const request = require('request-promise');
-const moment = require('moment');
+const handlingDataHelpers = require('./handlingDataHelpers');
 
-const getApiData = (uri) => request({
-    uri: uri,
-    headers: {
-        'User-Agent': 'Request-Promise'
-    },
-    json: true
-});
+const getApiData = handlingDataHelpers.getApiData;
+const handleCityWithSpaces = handlingDataHelpers.handleCityWithSpaces;
+const aggregateFlightData = handlingDataHelpers.aggregateFlightData;
+const prepareRequests = handlingDataHelpers.prepareRequests;
+const datesArray = handlingDataHelpers.datesArray;
+const createFlightsSearchRequests = handlingDataHelpers.createFlightsSearchRequests;
+const getFiftyRequests = handlingDataHelpers.getFiftyRequests;
 
-const datesArray = (middleDate) =>
-    [moment(middleDate).add(-2, 'd'), moment(middleDate).add(-1, 'd'), moment(middleDate),
-        moment(middleDate).add(1, 'd'), moment(middleDate).add(2, 'd')];
-
-const getDate = (date) =>
-    (date !== undefined) ? moment(date).format('YYYY-MM-DD') : Error('No date provided');
-
-const getTime = (date) =>
-    (date !== undefined) ? moment(date).format('h:mmA') : Error('No date provided');
-
-const metersToKilometers = (meters) => meters/1000;
-
-const minutesToHoursMinutes = (minutes) => {
-    const hours = Math.floor(minutes/60);
-    let mins = minutes % 60;
-    mins = mins.toString();
-    mins = mins.length === 1 ? '0' + mins : mins;
-    return hours.toString() + ':' + mins;
-};
-
-const aggregateFlightData = (flights) =>
-    flights.map(flight => ({
-        key: flight.key,
-        flightNum: flight.flightNum,
-        airline: flight.airline.name,
-        start: {
-            date: getDate(flight.start.dateTime),
-            time: getTime(flight.start.dateTime),
-            airport: flight.start.airportName,
-            city: flight.start.cityName
-        },
-        finish: {
-            date: getDate(flight.finish.dateTime),
-            time: getTime(flight.finish.dateTime),
-            airport: flight.finish.airportName,
-            city: flight.finish.cityName
-        },
-        plane: {
-            code: flight.plane.code,
-            name: flight.plane.fullname
-        },
-        distance: metersToKilometers(flight.distance),
-        duration: minutesToHoursMinutes(flight.durationMin),
-        price: flight.price
-    }));
-
-const createFlightsSearchRequests = (airlines, dates, startAirports, destinationAirports) => {
-    let flightSearchUrls = [];
-    let url;
-    airlines.map(airline => {
-        dates.map(currentDate => {
-            startAirports.map(startAirport => {
-                destinationAirports.map(destAirport => {
-                    url = createFlightSearchUrl(airline.code, getDate(currentDate), startAirport.airportCode, destAirport.airportCode);
-                    flightSearchUrls.push(url);
-                });
-            });
-        });
-    });
-    return flightSearchUrls;
-};
-
-const prepareRequests = (urls) => {
-    let requests = [];
-    let i = 0;
-    urls.map(url => {
-        if (i % 90 === 0) { // timeout in case of requests limit on API
-            setTimeout(() => {}, 500);
-        }
-        requests.push(getApiData(url));
-    });
-    return requests;
-};
-
-const createFlightSearchUrl = (airlineCode, date, from, to) =>
-    'http://node.locomote.com/code-task/flight_search/' + airlineCode + '?date=' + date + '&from=' + from + '&to=' + to;
 const airlinesUrl = 'http://node.locomote.com/code-task/airlines';
 const airportsUrl = 'http://node.locomote.com/code-task/airports?q=';
 
-exports.airlines = function(req, res) {
+const airlines = (req, res) => {
     getApiData(airlinesUrl)
         .then((airlines) => {
             try {
@@ -99,7 +22,7 @@ exports.airlines = function(req, res) {
         }).catch((e) => console.error(`Got error: ${e.message}`));
 };
 
-exports.airports = function(req, res) {
+const airports = (req, res) => {
     const city = req.params.city;
     getApiData(airportsUrl + city)
         .then((airlines) => {
@@ -111,8 +34,10 @@ exports.airports = function(req, res) {
         }).catch((e) => console.error(`Got error: ${e.message}`));
 };
 
-exports.search = function(req, res) {
-    const { from, to, date } = req.params;
+const search = (req, res) => {
+    let { from, to, date } = req.params;
+    from = handleCityWithSpaces(from);
+    to = handleCityWithSpaces(to);
     const getStartingLocationAirports = getApiData(airportsUrl + from);
     const getDestinationAirports = getApiData(airportsUrl + to);
     const getAirlines = getApiData(airlinesUrl);
@@ -124,9 +49,10 @@ exports.search = function(req, res) {
             const airlines = fetchedData[2];
             const flightsSearchUrls =
                 createFlightsSearchRequests(airlines, dates, startAirports, destinationAirports);
-            const flightsRequests = prepareRequests(flightsSearchUrls);
+            const allFlightsRequests = prepareRequests(flightsSearchUrls);
+            const requests = getFiftyRequests(allFlightsRequests);
 
-            Promise.all(flightsRequests)
+            Promise.all(requests)
                 .then(flights => {
                     flights = [].concat.apply([], flights);
                     flights = aggregateFlightData(flights);
@@ -142,3 +68,5 @@ exports.search = function(req, res) {
             res.status(500).send('Appeared problem with fetching airports/airlines data');
         });
 };
+
+module.exports = { airlines, airports, search };
