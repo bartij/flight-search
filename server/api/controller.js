@@ -12,11 +12,15 @@ const getApiData = (uri) => request({
 const datesArray = (middleDate) =>
     [moment(middleDate).add(-2, 'd'), moment(middleDate).add(-1, 'd'), moment(middleDate),
         moment(middleDate).add(1, 'd'), moment(middleDate).add(2, 'd')];
+
 const getDate = (date) =>
     (date !== undefined) ? moment(date).format('YYYY-MM-DD') : Error('No date provided');
+
 const getTime = (date) =>
     (date !== undefined) ? moment(date).format('h:mmA') : Error('No date provided');
+
 const metersToKilometers = (meters) => meters/1000;
+
 const minutesToHoursMinutes = (minutes) => {
     const hours = Math.floor(minutes/60);
     let mins = minutes % 60;
@@ -67,6 +71,18 @@ const createFlightsSearchRequests = (airlines, dates, startAirports, destination
     return flightSearchUrls;
 };
 
+const prepareRequests = (urls) => {
+    let requests = [];
+    let i = 0;
+    urls.map(url => {
+        if (i % 90 === 0) { // timeout in case of requests limit on API
+            setTimeout(() => {}, 500);
+        }
+        requests.push(getApiData(url));
+    });
+    return requests;
+};
+
 const createFlightSearchUrl = (airlineCode, date, from, to) =>
     'http://node.locomote.com/code-task/flight_search/' + airlineCode + '?date=' + date + '&from=' + from + '&to=' + to;
 const airlinesUrl = 'http://node.locomote.com/code-task/airlines';
@@ -82,6 +98,7 @@ exports.airlines = function(req, res) {
             }
         }).catch((e) => console.error(`Got error: ${e.message}`));
 };
+
 exports.airports = function(req, res) {
     const city = req.params.city;
     getApiData(airportsUrl + city)
@@ -93,11 +110,9 @@ exports.airports = function(req, res) {
             }
         }).catch((e) => console.error(`Got error: ${e.message}`));
 };
+
 exports.search = function(req, res) {
-    // const { from, to, date } = req.params;
-    const from = 'Sydney';
-    const to = 'New York';
-    const date = new Date(2017,10,25);
+    const { from, to, date } = req.params;
     const getStartingLocationAirports = getApiData(airportsUrl + from);
     const getDestinationAirports = getApiData(airportsUrl + to);
     const getAirlines = getApiData(airlinesUrl);
@@ -109,8 +124,9 @@ exports.search = function(req, res) {
             const airlines = fetchedData[2];
             const flightsSearchUrls =
                 createFlightsSearchRequests(airlines, dates, startAirports, destinationAirports);
-            const requests = [getApiData(flightsSearchUrls[0]), getApiData(flightsSearchUrls[10])];
-            Promise.all(requests)
+            const flightsRequests = prepareRequests(flightsSearchUrls);
+
+            Promise.all(flightsRequests)
                 .then(flights => {
                     flights = [].concat.apply([], flights);
                     flights = aggregateFlightData(flights);
@@ -118,11 +134,11 @@ exports.search = function(req, res) {
                 })
                 .catch(error => {
                     console.error('Error while searching for flights:', error);
-                    res.status(500).send('Something went wrong :(');
+                    res.status(500).send('Appeared problem with fetching flights data');
                 });
         })
         .catch(error => {
             console.error(`Fetching data error: ${error.message}`);
-            res.status(500).send('Something went wrong :(');
+            res.status(500).send('Appeared problem with fetching airports/airlines data');
         });
 };
