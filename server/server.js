@@ -15,5 +15,7 @@ app.use('/', function (req, res) {
 
 app.listen(port, function(error) {
     if (error) throw error;
-    console.log("Express server listening on port", port);
+    console.log('Express server listening on port', port);
 });
+
+module.exports = app;

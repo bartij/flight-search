@@ -12,6 +12,7 @@ const airlinesUrl = 'http://node.locomote.com/code-task/airlines';
 const airportsUrl = 'http://node.locomote.com/code-task/airports?q=';
 
 const airlines = (req, res) => {
+    console.log('airlinesssssssssssssss');
     getApiData(airlinesUrl)
         .then((airlines) => {
             try {
@@ -25,9 +26,9 @@ const airlines = (req, res) => {
 const airports = (req, res) => {
     const city = req.params.city;
     getApiData(airportsUrl + city)
-        .then((airlines) => {
+        .then((airports) => {
             try {
-                res.send(airlines);
+                res.send(airports);
             } catch (e) {
                 console.error(e.message);
             }
