@@ -9,11 +9,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 router(app);
 
+app.use(express.static('public'));
+
 app.use('/', function (req, res) {
     res.sendFile(path.resolve('client/', 'index.html'));
 });
 
 app.listen(port, function(error) {
     if (error) throw error;
-    console.log("Express server listening on port", port);
+    console.log('Express server listening on port', port);
 });

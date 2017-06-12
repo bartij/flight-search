@@ -13,12 +13,14 @@ const getApiData = (uri) => request({
     json: true
 });
 
-const datesArray = (middleDate) =>
-    [moment(middleDate).add(-2, 'd'), moment(middleDate).add(-1, 'd'), moment(middleDate),
-        moment(middleDate).add(1, 'd'), moment(middleDate).add(2, 'd')];
-
 const getDate = (date) =>
     (date !== undefined) ? moment(date).format('YYYY-MM-DD') : Error('No date provided');
+
+const datesArray = (middleDate) => {
+    let datesArray = [moment(middleDate).add(-2, 'd'), moment(middleDate).add(-1, 'd'), moment(middleDate),
+        moment(middleDate).add(1, 'd'), moment(middleDate).add(2, 'd')];
+    return datesArray.map(date => getDate(date));
+};
 
 const getTime = (date) =>
     (date !== undefined) ? moment(date).format('h:mmA') : Error('No date provided');
@@ -33,7 +35,7 @@ const minutesToHoursMinutes = (minutes) => {
     return hours.toString() + ':' + mins;
 };
 
-const handleCityWithSpaces = (city) => city.replace('_', ' ');
+const handleCityWithSpaces = city => city.replace('_', ' ');
 
 const aggregateFlightData = (flights) =>
     flights.map(flight => ({
@@ -77,23 +79,41 @@ const createFlightsSearchRequests = (airlines, dates, startAirports, destination
     return flightSearchUrls;
 };
 
-const prepareRequests = (urls) =>
-    urls.map(url =>
-        getApiData(url)
-    );
-
-const getFiftyRequests = (flightsRequests) => {
+const prepareRequests = (urls) => {
     let requests = [];
-    flightsRequests.map((r,i) =>{
-        if (i < 50) {
-            requests.push(r);
+    urls.map((url, index) => {
+        if ((index > 100 && index <= 105) || (index > 200 && index <= 205) || (index > 300 && index <= 305) || (index > 400 && index <= 405) || (index > urls.length-6 && index < urls.length)) {
+            requests.push(getApiData(url));
         }
     });
     return requests;
 };
 
+const orderFlightsByDate = (flights, dates) => {
+    let newFlightsArray = [[],[],[],[],[]];
+    flights.map(flight => {
+        switch(flight.start.date) {
+            case dates[0]:
+                newFlightsArray[0].push(flight);
+                break;
+            case dates[1]:
+                newFlightsArray[1].push(flight);
+                break;
+            case dates[2]:
+                newFlightsArray[2].push(flight);
+                break;
+            case dates[3]:
+                newFlightsArray[3].push(flight);
+                break;
+            case dates[4]:
+                newFlightsArray[4].push(flight);
+                break;
+        }
+    });
+    return newFlightsArray;
+};
+
 module.exports = {
-    getFiftyRequests,
     prepareRequests,
     createFlightSearchUrl,
     createFlightsSearchRequests,
@@ -102,5 +122,6 @@ module.exports = {
     getTime,
     aggregateFlightData,
     handleCityWithSpaces,
-    datesArray
+    datesArray,
+    orderFlightsByDate
 };

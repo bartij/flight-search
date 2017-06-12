@@ -1,0 +1,13 @@
+.flights-form {
+    background: url('background.png') no-repeat center;
+    height: 100%;
+}
+
+.input-group {
+    padding: 100px 20px;
+    color: aliceblue;
+}
+
+#results {
+    display: none;
+}
