@@ -25,8 +25,6 @@ const datesArray = (middleDate) => {
 const getTime = (date) =>
     (date !== undefined) ? moment(date).format('h:mmA') : Error('No date provided');
 
-const metersToKilometers = (meters) => meters/1000;
-
 const minutesToHoursMinutes = (minutes) => {
     const hours = Math.floor(minutes/60);
     let mins = minutes % 60;
@@ -39,26 +37,17 @@ const handleCityWithSpaces = city => city.replace('_', ' ');
 
 const aggregateFlightData = (flights) =>
     flights.map(flight => ({
-        key: flight.key,
         flightNum: flight.flightNum,
         airline: flight.airline.name,
         start: {
             date: getDate(flight.start.dateTime),
             time: getTime(flight.start.dateTime),
             airport: flight.start.airportName,
-            city: flight.start.cityName
         },
         finish: {
-            date: getDate(flight.finish.dateTime),
             time: getTime(flight.finish.dateTime),
             airport: flight.finish.airportName,
-            city: flight.finish.cityName
         },
-        plane: {
-            code: flight.plane.code,
-            name: flight.plane.fullname
-        },
-        distance: metersToKilometers(flight.distance),
         duration: minutesToHoursMinutes(flight.durationMin),
         price: flight.price
     }));

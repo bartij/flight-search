@@ -13,15 +13,18 @@ const airlinesUrl = 'http://node.locomote.com/code-task/airlines';
 const airportsUrl = 'http://node.locomote.com/code-task/airports?q=';
 
 const airlines = (req, res) => {
-    console.log('date', moment('20170122'));
     getApiData(airlinesUrl)
         .then((airlines) => {
             try {
                 res.send(airlines);
             } catch (e) {
+                res.status(500).send('Server error');
                 console.error(e.message);
             }
-        }).catch((e) => console.error(`Got error: ${e.message}`));
+        }).catch((e) => {
+            res.status(500).send('Server error');
+            console.error(`Got error: ${e.message}`);
+        });
 };
 
 const airports = (req, res) => {
@@ -31,9 +34,13 @@ const airports = (req, res) => {
             try {
                 res.send(airlines);
             } catch (e) {
+                res.status(500).send('Server error');
                 console.error(e.message);
             }
-        }).catch((e) => console.error(`Got error: ${e.message}`));
+        }).catch((e) => {
+            res.status(500).send('Server error');
+            console.error(`Got error: ${e.message}`);
+        });
 };
 
 const search = (req, res) => {
@@ -58,16 +65,16 @@ const search = (req, res) => {
                     flights = [].concat.apply([], flights);
                     flights = aggregateFlightData(flights);
                     const orderedFlights = orderFlightsByDate(flights, dates);
-                    res.send(orderedFlights);
+                    res.send({ flights: orderedFlights, dates: dates });
                 })
                 .catch(error => {
                     console.error('Error while searching for flights:', error);
-                    res.status(500).send('Appeared problem with fetching flights data');
+                    res.status(500).send('Server error: problem with fetching flights data\nPlease try again');
                 });
         })
         .catch(error => {
             console.error(`Fetching data error: ${error.message}`);
-            res.status(500).send('Appeared problem with fetching airports/airlines data');
+            res.status(500).send('Server error: problem with fetching airports/airlines data\nPlease try again');
         });
 };
 

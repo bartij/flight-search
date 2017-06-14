@@ -9,7 +9,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 router(app);
 
-app.use(express.static('public'));
+app.use(express.static('public/images'));
+app.use(express.static('public/css'));
+app.use(express.static('public/scripts'));
 
 app.use('/', function (req, res) {
     res.sendFile(path.resolve('client/', 'index.html'));

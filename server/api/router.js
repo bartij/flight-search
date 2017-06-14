@@ -1,7 +1,7 @@
 const express = require('express');
 const controller = require('./controller');
 
-module.exports = function(app) {
+module.exports = function (app) {
     const apiRoutes = express.Router();
 
     app.use('/', apiRoutes);
