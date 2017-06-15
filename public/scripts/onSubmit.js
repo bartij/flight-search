@@ -7,25 +7,16 @@ const columns = [
     { field: 'duration', title: 'Duration' }
 ];
 
-const prepareFlightsData = flightsArray =>
-    flightsArray.map(flight => ({
-        flightNum: flight.flightNum,
-        airline: flight.airline,
-        start: flight.start.time + ' ' + flight.start.airport,
-        landing: flight.finish.time + ' ' + flight.finish.airport,
-        price: '$' + flight.price,
-        duration: flight.duration
-    })
-);
-
 const onSubmit = (event) => {
     $('#errorMessage').hide();
     $('#results').hide();
+    $('.no-flights').hide();
     $('.loader').show();
     const from = $('#from').val();
     const to = $('#to').val();
     let date = $('#date').val();
     date = date.split('-').join('');
+    $('.flights-title').text(from + ' - ' + to);
     $.ajax({
         type: 'POST',
         data: JSON.stringify({ from, to, date }),
@@ -45,7 +36,25 @@ const setDatesOnTabs = (dates) => {
     $('#tab5').text(dates[4]);
 };
 
-const createFlightsTable = (flights) => {
+const onError = (xhr) => {
+    $('#errorMessage h2').text(xhr.responseText);
+    $('#errorMessage').show();
+    $('.loader').hide();
+};
+
+
+const onSuccess = (data) => {
+    if (data.flights.length > 0) {
+        setDatesOnTabs(data.dates);
+        createFlightsTables(data.flights);
+        $('.loader').hide();
+        $('#results').show();
+    } else {
+        $('.no-flights').show();
+    }
+};
+
+const createFlightsTables = (flights) => {
     prepareTables(flights[0], '#table1');
     prepareTables(flights[1], '#table2');
     prepareTables(flights[2], '#table3');
@@ -53,21 +62,23 @@ const createFlightsTable = (flights) => {
     prepareTables(flights[4], '#table5');
 };
 
-const onSuccess = (data) => {
-    setDatesOnTabs(data.dates);
-    createFlightsTable(data.flights);
-    $('.loader').hide();
-    $('#results').show();
-};
-
-const onError = (xhr) => {
-    $('#errorMessage h2').text(xhr.responseText);
-    $('#errorMessage').show();
-    $('.loader').hide();
-};
-
 const prepareTables = (flightsArray, tableId) => {
-    const flights = prepareFlightsData(flightsArray);
-    $(tableId).bootstrapTable({ columns, data: {} });
-    $(tableId).bootstrapTable('load', flights);
+    if (flightsArray.length > 0) {
+        const flights = prepareFlightsData(flightsArray);
+        $(tableId).bootstrapTable({ columns, data: {} });
+        $(tableId).bootstrapTable('load', flights);
+    } else {
+        $('#menu'+tableId[tableId.length-1]).prepend('<h3 style="width: 100%; text-align: center;">No flights on this day</h3>');
+    }
 };
+
+const prepareFlightsData = flightsArray =>
+    flightsArray.map(flight => ({
+        flightNum: flight.flightNum,
+        airline: flight.airline,
+        start: flight.start.time + ' ' + flight.start.airport,
+        landing: flight.finish.time + ' ' + flight.finish.airport,
+        price: '$' + flight.price,
+        duration: flight.duration
+    }));
+

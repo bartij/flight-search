@@ -7,5 +7,5 @@ module.exports = function (app) {
     app.use('/', apiRoutes);
     apiRoutes.get('/airlines', controller.airlines);
     apiRoutes.get('/airports/:city', controller.airports);
-    apiRoutes.post('/search', controller.search); //:from-:to-:date
+    apiRoutes.post('/search', controller.search);
 };

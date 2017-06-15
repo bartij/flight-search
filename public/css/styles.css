@@ -41,3 +41,12 @@ hr {
 input:-webkit-autofill, input:-webkit-autofill:focus, input:-webkit-autofill:active, input:-webkit-autofill:hover {
     -webkit-box-shadow: 0 0 0 30px white inset;
 }
+
+.no-flights {
+    display: none;
+}
+
+.flights-title {
+    width: 100%;
+    text-align: center;
+}
