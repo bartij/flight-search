@@ -21,16 +21,20 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
+    "jquery": "^3.2.1",
     "moment": "^2.18.1",
     "nodemon": "^1.11.0",
     "request": "^2.81.0",
-    "request-promise": "^4.2.1"
+    "request-promise": "^4.2.1",
+    "sleep": "^5.1.1"
   },
   "devDependencies": {
     "chai": "^4.0.2",
+    "chai-http": "^3.0.0",
     "eslint": "^3.19.0",
     "mocha": "^3.4.2",
     "mockery": "^2.0.0",
+    "proxyquire": "^1.8.0",
     "sinon": "^2.3.2",
     "supertest": "^3.0.0"
   }

@@ -1,0 +1,52 @@
+.flights-form {
+    background: url('background.png') no-repeat center;
+    height: 260px;
+    text-align: center;
+    top: 0;
+    position: relative;
+}
+
+.input-group {
+    color: aliceblue;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+}
+
+.loader {
+    width: 100%;
+    display: none;
+    text-align: center;
+}
+
+#errorMessage {
+    display: none;
+    padding: 20px;
+}
+
+.loader img {
+    padding-top: 100px;
+}
+
+#results {
+    display: none;
+}
+
+hr {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+input:-webkit-autofill, input:-webkit-autofill:focus, input:-webkit-autofill:active, input:-webkit-autofill:hover {
+    -webkit-box-shadow: 0 0 0 30px white inset;
+}
+
+.no-flights {
+    display: none;
+}
+
+.flights-title {
+    width: 100%;
+    text-align: center;
+}
