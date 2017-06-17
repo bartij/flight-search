@@ -55,14 +55,12 @@ const search = (req, res) => {
 
     Promise.all([getStartingLocationAirports, getDestinationAirports, getAirlines])
         .then(fetchedData => {
-            // console.log(fetchedData[0][0], fetchedData[1][0]);
             const startAirports = fetchedData[0];
             const destinationAirports = fetchedData[1];
             const airlines = fetchedData[2];
             const flightsSearchUrls =
                 createFlightsSearchUrls(airlines, dates, startAirports, destinationAirports);
             const flightsRequests = prepareRequests(flightsSearchUrls);
-            // console.log('prepareReq',flightsRequests[0]);
 
             Promise.all(flightsRequests)
                 .then(flights => {

@@ -73,14 +73,14 @@ describe('Helper functions', () => {
 
     it('should create date in YYYY-MM-DD format', () => {
         const date = moment('20170628');
-        const convertedDate = helpers.getDate(date);
+        const convertedDate = helpers.formatDate(date);
 
         expect(convertedDate).to.deep.equal('2017-06-28');
     });
 
-    it('should throw an error when no date is provided to getDate', () => {
+    it('should throw an error when no date is provided to formatDate', () => {
         try {
-            helpers.getDate();
+            helpers.formatDate();
         } catch (error) {
             expect(error).to.be.true;
         }
@@ -99,7 +99,7 @@ describe('Helper functions', () => {
         datesArray[4].should.be.eql(moment(date).add(2, 'd').format('YYYY-MM-DD'));
     });
 
-    it('should throw an error when no date is provided to getDate', () => {
+    it('should throw an error when no date is provided to formatDate', () => {
         try {
             helpers.datesArray();
         } catch (error) {

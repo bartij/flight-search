@@ -13,7 +13,7 @@ const getApiData = (uri) =>
     uri !== undefined && uri.indexOf('.') > -1 && (uri.indexOf('http://') > -1 || uri.indexOf('https://') > -1) ?
         request.get({ uri, json: true }) : Error('No uri provided');
 
-const getDate = (date) =>
+const formatDate = (date) =>
     (date !== undefined) ? moment(date).format('YYYY-MM-DD') : Error('No date provided');
 
 const datesArray = (middleDate) => {
@@ -22,7 +22,7 @@ const datesArray = (middleDate) => {
     }
     let datesArray = [moment(middleDate).add(-2, 'd'), moment(middleDate).add(-1, 'd'), moment(middleDate),
         moment(middleDate).add(1, 'd'), moment(middleDate).add(2, 'd')];
-    return datesArray.map(date => getDate(date));
+    return datesArray.map(date => formatDate(date));
 };
 
 const getTime = (date) =>
@@ -46,7 +46,7 @@ const aggregateFlightData = (flights) =>
         flightNum: flight.flightNum,
         airline: flight.airline.name,
         start: {
-            date: getDate(flight.start.dateTime),
+            date: formatDate(flight.start.dateTime),
             time: getTime(flight.start.dateTime),
             airport: flight.start.airportName,
         },
@@ -61,6 +61,9 @@ const aggregateFlightData = (flights) =>
 const createFlightsSearchUrls = (airlines, dates, startAirports, destinationAirports) => {
     if (arguments.length < 4) {
         throw Error('Not enough arguments to create search request');
+    }
+    if (formatDate(dates[dates.length-1]) < moment()) {
+        throw Error('Past dates provided');
     }
     if (!(airlines instanceof Array)) {
         airlines = [airlines];
@@ -77,13 +80,16 @@ const createFlightsSearchUrls = (airlines, dates, startAirports, destinationAirp
     let flightSearchUrls = [];
     let url;
     airlines.map(airline => {
-        dates.map(currentDate => {
+        dates.map(date => {
             startAirports.map(startAirport => {
                 destinationAirports.map(destAirport => {
-                    url = createFlightSearchUrl(
-                        airline.code, getDate(currentDate), startAirport.airportCode, destAirport.airportCode
-                    );
-                    flightSearchUrls.push(url);
+                    const convertedDate = formatDate(date);
+                    if (moment().isBefore(convertedDate)) {
+                        url = createFlightSearchUrl(
+                            airline.code, formatDate(date), startAirport.airportCode, destAirport.airportCode
+                        );
+                        flightSearchUrls.push(url);
+                    }
                 });
             });
         });
@@ -145,7 +151,7 @@ module.exports = {
     createFlightSearchUrl,
     createFlightsSearchUrls,
     getApiData,
-    getDate,
+    formatDate,
     getTime,
     aggregateFlightData,
     handleCityWithSpaces,
