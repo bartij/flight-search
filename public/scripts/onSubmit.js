@@ -8,23 +8,28 @@ const columns = [
 ];
 
 const onSubmit = (event) => {
-    $('#errorMessage').hide();
-    $('#results').hide();
-    $('.no-flights').hide();
-    $('.loader').show();
     const from = $('#from').val();
     const to = $('#to').val();
     let date = $('#date').val();
     date = date.split('-').join('');
     $('.flights-title').text(from + ' - ' + to);
-    $.ajax({
-        type: 'POST',
-        data: JSON.stringify({ from, to, date }),
-        contentType: 'application/json',
-        url: 'http://localhost:3000/search',
-        error: onError,
-        success: onSuccess
-    });
+    if (!moment().isAfter(moment(date).add(-2, 'd'))) {
+        $('#past-date').hide();
+        $('#errorMessage').hide();
+        $('#results').hide();
+        $('.no-flights').hide();
+        $('.loader').show();
+        $.ajax({
+            type: 'POST',
+            data: JSON.stringify({ from, to, date }),
+            contentType: 'application/json',
+            url: 'http://localhost:3000/search',
+            error: onError,
+            success: onSuccess
+        });
+    } else {
+        $('#past-date').show();
+    }
     event.preventDefault();
 };
 
@@ -63,12 +68,16 @@ const createFlightsTables = (flights) => {
 };
 
 const prepareTables = (flightsArray, tableId) => {
+    const noFlightsMessageId = '#no-flights-tab'+tableId[tableId.length-1];
     if (flightsArray.length > 0) {
+        $(noFlightsMessageId).hide();
+        $(tableId).show();
         const flights = prepareFlightsData(flightsArray);
         $(tableId).bootstrapTable({ columns, data: {} });
         $(tableId).bootstrapTable('load', flights);
     } else {
-        $('#menu'+tableId[tableId.length-1]).prepend('<h3 style="width: 100%; text-align: center;">No flights on this day</h3>');
+        $(tableId).hide();
+        $(noFlightsMessageId).show();
     }
 };
 

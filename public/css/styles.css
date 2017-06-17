@@ -50,3 +50,19 @@ input:-webkit-autofill, input:-webkit-autofill:focus, input:-webkit-autofill:act
     width: 100%;
     text-align: center;
 }
+
+div h3 .no-flights-message {
+    width: 100%; text-align: center;
+}
+
+#no-flights-tab1, #no-flights-tab2, #no-flights-tab3, #no-flights-tab4, #no-flights-tab5 {
+    display: none;
+}
+
+#past-date {
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+    color: rgb(208, 17, 17);
+    display: none;
+}
