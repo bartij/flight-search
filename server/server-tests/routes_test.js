@@ -2,7 +2,6 @@ const request = require('request-promise');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const sinon = require('sinon');
-const proxyquire =  require('proxyquire');
 
 const server = require('../server');
 const helpers = require('../helpers/handlingDataHelpers');
@@ -110,5 +109,5 @@ describe('Routes', () => {
     //             res.body.dates.length.should.be.eql(dummyFlights.dates.length);
     //             done();
     //         });
-    // }).timeout(10000);
+    // });
 });
