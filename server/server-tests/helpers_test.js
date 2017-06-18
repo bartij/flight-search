@@ -1,13 +1,15 @@
-const helpers = require('../api/handlingDataHelpers');
 const expect = require('chai').expect;
+const should = require('chai').should();
 const moment = require('moment');
 const sinon = require('sinon');
 const request = require('request-promise');
 
+const helpers = require('../helpers/handlingDataHelpers');
+const dateTimeHelpers = require('../helpers/dateTimeHelpers');
+const aggregateFlightData = require('../helpers/handlingDataHelpers').aggregateFlightData;
 const dummyFlights = require('./resources/dummyFlightsResponse').flights;
 const dummyAirports = require('./resources/dummyAirportsResponse');
 const dummyAirlines = require('./resources/dummyAirlinesResponse');
-const aggregateFlightData = require('../api/handlingDataHelpers').aggregateFlightData;
 
 describe('Helper functions', () => {
     beforeEach((done) => {
@@ -73,14 +75,14 @@ describe('Helper functions', () => {
 
     it('should create date in YYYY-MM-DD format', () => {
         const date = moment('20170628');
-        const convertedDate = helpers.formatDate(date);
+        const convertedDate = dateTimeHelpers.formatDate(date);
 
         expect(convertedDate).to.deep.equal('2017-06-28');
     });
 
     it('should throw an error when no date is provided to formatDate', () => {
         try {
-            helpers.formatDate();
+            dateTimeHelpers.formatDate();
         } catch (error) {
             expect(error).to.be.true;
         }
@@ -88,7 +90,7 @@ describe('Helper functions', () => {
 
     it('should create dates array range: providedDay-2 - providedDay+2', () => {
         const date = moment('20170628');
-        const datesArray = helpers.datesArray(date);
+        const datesArray = dateTimeHelpers.datesArray(date);
 
         datesArray.should.be.a('array');
         datesArray.length.should.be.eql(5);
@@ -101,7 +103,7 @@ describe('Helper functions', () => {
 
     it('should throw an error when no date is provided to formatDate', () => {
         try {
-            helpers.datesArray();
+            dateTimeHelpers.datesArray();
         } catch (error) {
             expect(error).to.not.be.eql(undefined);
         }
@@ -109,14 +111,14 @@ describe('Helper functions', () => {
 
     it('should get a time from date and time object', () => {
         const date = '2017-06-29T12:30:00+02:00';
-        const time = helpers.getTime(date);
+        const time = dateTimeHelpers.getTime(date);
 
         time.should.be.eql('12:30PM');
     });
 
     it('should throw an error when no date is provided to getTime', () => {
         try {
-            helpers.getTime();
+            dateTimeHelpers.getTime();
         } catch (error) {
             expect(error).to.be.true;
         }
@@ -125,14 +127,14 @@ describe('Helper functions', () => {
     it('should convert minutes to hours and minutes', () => {
         const minutes = 600;
         const expectedHoursAndMinutes = '10:00';
-        const hoursAndMinutes = helpers.minutesToHoursAndMinutes(minutes);
+        const hoursAndMinutes = dateTimeHelpers.minutesToHoursAndMinutes(minutes);
 
         hoursAndMinutes.should.be.eql(expectedHoursAndMinutes);
     });
 
     it('should throw an error when no minutes provided to minutesToHoursAndMinutes', () => {
         try {
-            helpers.minutesToHoursAndMinutes();
+            dateTimeHelpers.minutesToHoursAndMinutes();
         } catch (error) {
             expect(error).to.be.not.eql(undefined);
         }

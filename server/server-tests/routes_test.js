@@ -5,12 +5,12 @@ const sinon = require('sinon');
 const proxyquire =  require('proxyquire');
 
 const server = require('../server');
-const helpers = require('../api/handlingDataHelpers');
+const helpers = require('../helpers/handlingDataHelpers');
 const dummyAirlines = require('./resources/dummyAirlinesResponse');
 const dummyAirports = require('./resources/dummyAirportsResponse');
 const dummyFlights = require('./resources/dummyFlightsResponse');
-const airlinesUrl = require('../api/controller').airlinesUrl;
-const airportsUrl = require('../api/controller').airportsUrl;
+const airlinesUrl = require('../constants/urls').airlinesUrl;
+const airportsUrl = require('../constants/urls').airportsUrl;
 
 const should = chai.should();
 chai.use(chaiHttp);

@@ -1,4 +1,6 @@
-const handlingDataHelpers = require('./handlingDataHelpers');
+const handlingDataHelpers = require('../helpers/handlingDataHelpers');
+const airportsUrl = require('../constants/urls').airportsUrl;
+const airlinesUrl = require('../constants/urls').airlinesUrl;
 
 const getApiData = handlingDataHelpers.getApiData;
 const handleCityWithSpaces = handlingDataHelpers.handleCityWithSpaces;
@@ -7,9 +9,6 @@ const prepareRequests = handlingDataHelpers.prepareRequests;
 const datesArray = handlingDataHelpers.datesArray;
 const createFlightsSearchUrls = handlingDataHelpers.createFlightsSearchUrls;
 const orderFlightsByDate = handlingDataHelpers.orderFlightsByDate;
-
-const airlinesUrl = 'http://node.locomote.com/code-task/airlines';
-const airportsUrl = 'http://node.locomote.com/code-task/airports?q=';
 
 const airlines = (req, res) => getApiData(airlinesUrl)
     .then((airlines) => {
@@ -80,4 +79,4 @@ const search = (req, res) => {
         });
 };
 
-module.exports = { airlines, airports, search, airlinesUrl, airportsUrl };
+module.exports = { airlines, airports, search };
