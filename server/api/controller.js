@@ -1,4 +1,5 @@
 const handlingDataHelpers = require('../helpers/handlingDataHelpers');
+const datesArray = require('../helpers/dateTimeHelpers').datesArray;
 const airportsUrl = require('../constants/urls').airportsUrl;
 const airlinesUrl = require('../constants/urls').airlinesUrl;
 
@@ -6,7 +7,6 @@ const getApiData = handlingDataHelpers.getApiData;
 const handleCityWithSpaces = handlingDataHelpers.handleCityWithSpaces;
 const aggregateFlightData = handlingDataHelpers.aggregateFlightData;
 const prepareRequests = handlingDataHelpers.prepareRequests;
-const datesArray = handlingDataHelpers.datesArray;
 const createFlightsSearchUrls = handlingDataHelpers.createFlightsSearchUrls;
 const orderFlightsByDate = handlingDataHelpers.orderFlightsByDate;
 
