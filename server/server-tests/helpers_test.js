@@ -143,14 +143,14 @@ describe('Helper functions', () => {
     it('should replace _ with space in the city name', () => {
         const city = 'New_York';
         const expected = 'New York';
-        const handledCityName = helpers.handleCityWithSpaces(city);
+        const handledCityName = helpers.underscoreToSpaceInCityName(city);
 
         handledCityName.should.be.eql(expected);
     });
 
-    it('should throw an error when no city is provided to handleCityWithSpaces', () => {
+    it('should throw an error when no city is provided to underscoreToSpaceInCityName', () => {
         try {
-            helpers.handleCityWithSpaces();
+            helpers.underscoreToSpaceInCityName();
         } catch (error) {
             expect(error).to.be.true;
         }

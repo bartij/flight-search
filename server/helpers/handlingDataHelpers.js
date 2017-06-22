@@ -15,7 +15,7 @@ const getApiData = (uri) =>
     uri !== undefined && uri.indexOf('.') > -1 && (uri.indexOf('http://') > -1 || uri.indexOf('https://') > -1) ?
         request.get({ uri, json: true }) : Error('No uri provided');
 
-const handleCityWithSpaces = city => city !== undefined ? city.replace('_', ' ') : Error('No city provided');
+const underscoreToSpaceInCityName = city => city !== undefined ? city.replace('_', ' ') : Error('No city provided');
 
 const aggregateFlightData = (flights) =>
     flights.map(flight => ({
@@ -102,25 +102,14 @@ const orderFlightsByDate = (flights, dates) => {
     if (arguments.length < 2) {
         throw Error('Not enough arguments to order flights');
     }
-    let newFlightsArray = [[],[],[],[],[]];
-    flights.map(flight => {
-        switch(flight.start.date) {
-            case dates[0]:
-                newFlightsArray[0].push(flight);
-                break;
-            case dates[1]:
-                newFlightsArray[1].push(flight);
-                break;
-            case dates[2]:
-                newFlightsArray[2].push(flight);
-                break;
-            case dates[3]:
-                newFlightsArray[3].push(flight);
-                break;
-            case dates[4]:
-                newFlightsArray[4].push(flight);
-                break;
-        }
+    let newFlightsArray = [];
+    dates.forEach((date, index) => {
+        newFlightsArray.push([]);
+        flights.forEach(flight => {
+            if (date === flight.start.date) {
+                newFlightsArray[index].push(flight);
+            }
+        });
     });
     return newFlightsArray;
 };
@@ -131,7 +120,7 @@ module.exports = {
     createFlightsSearchUrls,
     getApiData,
     aggregateFlightData,
-    handleCityWithSpaces,
+    underscoreToSpaceInCityName,
     orderFlightsByDate,
     searchUrlBase
 };

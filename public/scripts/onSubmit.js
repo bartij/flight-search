@@ -8,10 +8,11 @@ const columns = [
 ];
 
 const onSubmit = (event) => {
-    const from = $('#from').val();
-    const to = $('#to').val();
-    let date = $('#date').val();
-    date = date.split('-').join('');
+    const fromId = '#from';
+    const toId = '#to';
+    const dateId = '#date';
+    const { from, to, date } = getFormValues(fromId, toId, dateId);
+
     $('.flights-title').text(from + ' - ' + to);
     if (!moment().isAfter(moment(date).add(-2, 'd'))) {
         $('#past-date').hide();
@@ -23,23 +24,26 @@ const onSubmit = (event) => {
             type: 'POST',
             data: JSON.stringify({ from, to, date }),
             contentType: 'application/json',
-            url: 'http://localhost:3000/search',
-            error: onError,
-            success: onSuccess
-        });
+            url: '/search'
+        })
+            .done(onSuccess)
+            .fail(onError);
     } else {
         $('#past-date').show();
     }
     event.preventDefault();
 };
 
-const setDatesOnTabs = (dates) => {
-    $('#tab1').text(dates[0]);
-    $('#tab2').text(dates[1]);
-    $('#tab3').text(dates[2]);
-    $('#tab4').text(dates[3]);
-    $('#tab5').text(dates[4]);
+const getFormValues = (fromId, toId, dateId) => {
+    const from = $(fromId).val();
+    const to = $(toId).val();
+    let date = $(dateId).val();
+    date = date.split('-').join('');
+    return { from, to, date };
 };
+
+const setDatesOnTabs = dates =>
+    dates.forEach((date, index) => $('#tab'+(index+1)).text(dates[index]));
 
 const onError = (xhr) => {
     $('#errorMessage h2').text(xhr.responseText);
@@ -59,13 +63,8 @@ const onSuccess = (data) => {
     }
 };
 
-const createFlightsTables = (flights) => {
-    prepareTables(flights[0], '#table1');
-    prepareTables(flights[1], '#table2');
-    prepareTables(flights[2], '#table3');
-    prepareTables(flights[3], '#table4');
-    prepareTables(flights[4], '#table5');
-};
+const createFlightsTables = flights =>
+    flights.forEach((flight, index) => prepareTables(flights[index], '#table'+(index+1)));
 
 const prepareTables = (flightsArray, tableId) => {
     const noFlightsMessageId = '#no-flights-tab'+tableId[tableId.length-1];
