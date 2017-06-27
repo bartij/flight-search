@@ -37,31 +37,25 @@ const search = (req, res) => {
     let { from, to, date } = req.body;
     from = underscoreToSpaceInCityName(from);
     to = underscoreToSpaceInCityName(to);
-    const getStartingLocationAirports = getApiData(airportsUrl + from);
-    const getDestinationAirports = getApiData(airportsUrl + to);
     const getAirlines = getApiData(airlinesUrl);
     const dates = datesArray(date);
 
-    Promise.all([getStartingLocationAirports, getDestinationAirports, getAirlines])
-        .then(fetchedData => {
-            const startAirports = fetchedData[0];
-            const destinationAirports = fetchedData[1];
-            const airlines = fetchedData[2];
-            const flightsSearchUrls =
-                createFlightsSearchUrls(airlines, dates, startAirports, destinationAirports);
-            const flightsRequests = prepareRequests(flightsSearchUrls);
+    getAirlines.then(airlines => {
+        const flightsSearchUrls =
+            createFlightsSearchUrls(airlines, dates, from, to);
+        const flightsRequests = prepareRequests(flightsSearchUrls);
 
-            Promise.all(flightsRequests)
-                .then(flights => {
-                    flights = [].concat.apply([], flights);
-                    flights = aggregateFlightData(flights);
-                    const orderedFlights = orderFlightsByDate(flights, dates);
-                    res.send({ flights: orderedFlights, dates: dates });
-                })
-                .catch(error => {
-                    console.error('Error while searching for flights:', error);
-                    res.status(500).send('Server error: problem with fetching flights data\nPlease try again');
-                });
+        Promise.all(flightsRequests)
+            .then(flights => {
+                flights = [].concat.apply([], flights);
+                flights = aggregateFlightData(flights);
+                const orderedFlights = orderFlightsByDate(flights, dates);
+                res.send({ flights: orderedFlights, dates: dates });
+            })
+            .catch(error => {
+                console.error('Error while searching for flights:', error);
+                res.status(500).send('Server error: problem with fetching flights data\nPlease try again');
+            });
         })
         .catch(error => {
             console.error(`Fetching data error: ${error.message}`);

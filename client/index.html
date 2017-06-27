@@ -20,6 +20,9 @@
             crossorigin="anonymous">
     </script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="moment.min.js"></script>
@@ -30,7 +33,7 @@
     <form class="form-inline flights-form">
         <div class="form-group input-group">
             <input type="text"
-                   pattern="[a-zA-Z ]*"
+                   pattern="[a-zA-Z,() ]*"
                    title="Only letters allowed"
                    class="form-control"
                    id="from"
@@ -39,7 +42,7 @@
         </div>
         <div class="form-group input-group">
             <input type="text"
-                   pattern="[a-zA-Z ]*"
+                   pattern="[a-zA-Z,() ]*"
                    title="Only letters allowed"
                    class="form-control"
                    id="to"
@@ -55,7 +58,10 @@
                    required>
         </div>
         <div class="form-group input-group">
-            <button type="submit" class="btn btn-default">Search</button>
+            <button type="submit" class="btn btn-default" disabled="disabled">
+                Search
+                <span class="tooltiptext">Airports should be selected</span>
+            </button>
         </div>
     </form>
 </div>
@@ -103,7 +109,34 @@
     <h2>Server responded with error. Please try again</h2>
 </div>
 <script>
-    $("form").submit(onSubmit);
+    let selectedTo = false;
+    let selectedFrom = false;
+    focusFromInput();
+    setMinDateLimit();
+    $('form').submit(onSubmit);
+    const options = {
+        delay: 300,
+        minLength: 2,
+        autoFocus: true,
+        source: getSource
+    };
+    $('#from').autocomplete(options);
+    $('#to').autocomplete(options);
+    $('#from').on('autocompleteselect', () => {
+        selectedFrom = true;
+        if (selectedFrom && selectedTo) {
+            $('button').prop('disabled', false);
+        }
+    });
+    $('#to').on('autocompleteselect', () => {
+        selectedTo = true;
+        if (selectedFrom && selectedTo) {
+            $('button').prop('disabled', false);
+        }
+    });
+    $('#date').on('change', () => {
+        $('button').prop('disabled', false);
+    });
 </script>
 </body>
 </html>

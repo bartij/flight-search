@@ -34,7 +34,7 @@ const aggregateFlightData = (flights) =>
         price: flight.price
     }));
 
-const createFlightsSearchUrls = (airlines, dates, startAirports, destinationAirports) => {
+const createFlightsSearchUrls = (airlines, dates, startAirportCode, destinationAirportCode) => {
     if (arguments.length < 4) {
         throw Error('Not enough arguments to create search request');
     }
@@ -47,30 +47,21 @@ const createFlightsSearchUrls = (airlines, dates, startAirports, destinationAirp
     if (!(dates instanceof Array)) {
         dates = [dates];
     }
-    if (!(startAirports instanceof Array)) {
-        startAirports = [startAirports];
-    }
-    if (!(destinationAirports instanceof Array)) {
-        destinationAirports = [destinationAirports];
-    }
     let flightSearchUrls = [];
     let url;
+    let now = moment().format('YYYY-MM-DD');
     airlines.map(airline => {
         dates.map(date => {
-            startAirports.map(startAirport => {
-                destinationAirports.map(destAirport => {
-                    const convertedDate = dateTimeHelpers.formatDate(date);
-                    if (moment().isBefore(convertedDate)) {
-                        url = createFlightSearchUrl(
-                            airline.code,
-                            dateTimeHelpers.formatDate(date),
-                            startAirport.airportCode,
-                            destAirport.airportCode
-                        );
-                        flightSearchUrls.push(url);
-                    }
-                });
-            });
+            const convertedDate = dateTimeHelpers.formatDate(date);
+            if (now <= convertedDate) {
+                url = createFlightSearchUrl(
+                    airline.code,
+                    dateTimeHelpers.formatDate(date),
+                    startAirportCode,
+                    destinationAirportCode
+                );
+                flightSearchUrls.push(url);
+            }
         });
     });
     return flightSearchUrls;
@@ -80,18 +71,6 @@ const prepareRequests = (urls) => {
     let requests = [];
     if (urls === undefined || urls.length < 1) {
         throw Error('No urls to prepare requests');
-    } else if (urls.length < 150) {
-        urls.map((url, index) => {
-            if (index % 5 === 0) {
-                requests.push(getApiData(url));
-            }
-        });
-    } else if (urls.length > 150) {
-        urls.map((url, index) => {
-            if (index % 10 === 0) {
-                requests.push(getApiData(url));
-            }
-        });
     } else {
         urls.map(url => requests.push(getApiData(url)));
     }

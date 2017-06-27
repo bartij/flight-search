@@ -66,3 +66,45 @@ div h3 .no-flights-message {
     color: rgb(208, 17, 17);
     display: none;
 }
+
+button {
+    position: relative;
+    border: 1px solid #0066cc;
+    background-color: #0099cc;
+    color: #ffffff;
+}
+
+button:hover {
+    border: 1px solid #0099cc;
+    background-color: #00aacc;
+    color: #ffffff;
+}
+
+button:disabled,
+button[disabled]{
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
+
+button[disabled]:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+button .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 1s 0.5s;
+}

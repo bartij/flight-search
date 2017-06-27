@@ -11,15 +11,24 @@ const onSubmit = (event) => {
     const fromId = '#from';
     const toId = '#to';
     const dateId = '#date';
-    const { from, to, date } = getFormValues(fromId, toId, dateId);
-
+    let { from, to, date } = getFormValues(fromId, toId, dateId);
+    from = getAirportCode(from);
+    to = getAirportCode(to);
     $('.flights-title').text(from + ' - ' + to);
-    if (!moment().isAfter(moment(date).add(-2, 'd'))) {
+
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    const selectedDate = new Date(date);
+    if (selectedDate >= now) {
         $('#past-date').hide();
         $('#errorMessage').hide();
         $('#results').hide();
         $('.no-flights').hide();
         $('.loader').show();
+        $('button').prop('disabled', true);
+        selectedFrom = false;
+        selectedTo = false;
+
         $.ajax({
             type: 'POST',
             data: JSON.stringify({ from, to, date }),
@@ -38,9 +47,10 @@ const getFormValues = (fromId, toId, dateId) => {
     const from = $(fromId).val();
     const to = $(toId).val();
     let date = $(dateId).val();
-    date = date.split('-').join('');
     return { from, to, date };
 };
+
+const getAirportCode = (airportLabel) => airportLabel.match(/\(([^)]+)\)/)[1];
 
 const setDatesOnTabs = dates =>
     dates.forEach((date, index) => $('#tab'+(index+1)).text(dates[index]));
@@ -90,3 +100,23 @@ const prepareFlightsData = flightsArray =>
         duration: flight.duration
     }));
 
+const getSource = (request, response) => {
+    $.ajax({
+        type: 'GET',
+        url: '/airports/'+request.term
+    }).done(data => {
+        const airports = data.map(airport => airport.airportName + ', ' + airport.cityName + ' (' + airport.airportCode +')');
+        response(airports);
+    }).fail(onError);
+};
+
+const focusFromInput = () => {
+    $(document).ready(function() {
+        $('#from').focus();
+    });
+};
+
+const setMinDateLimit = () => {
+    const minDate = moment().format('YYYY-MM-DD')
+    $('#date').prop('min', minDate);
+};
