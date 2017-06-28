@@ -36,7 +36,7 @@
             <input type="text"
                    pattern="[a-zA-Z,() ]*"
                    title="Only letters allowed"
-                   class="form-control"
+                   class="form-control .ui-autocomplete-loading"
                    id="from"
                    placeholder="from"
                    required>
@@ -61,7 +61,6 @@
         <div class="form-group input-group">
             <button type="submit" class="btn btn-default" disabled="disabled">
                 Search
-                <span class="tooltiptext">Airports should be selected</span>
             </button>
         </div>
     </form>
@@ -112,19 +111,17 @@
 <script>
     let selectedTo = false;
     let selectedFrom = false;
-    focusFromInput();
+    const fromInputId = '#from';
+    const toInputId = '#to';
+    focusFromInputOnStartup();
     setMinDateLimit();
     $('form').submit(onSubmit);
-    const options = {
-        delay: 300,
-        minLength: 2,
-        autoFocus: true,
-        source: getSource
-    };
-    $('#from').autocomplete(options);
-    $('#to').autocomplete(options);
-    onAutocompleteSelect('#from');
-    onAutocompleteSelect('#to');
+    $(fromInputId).autocomplete(createOptions(fromInputId));
+    $(toInputId).autocomplete(createOptions(toInputId));
+    onAutocompleteSelect(fromInputId);
+    onAutocompleteSelect(toInputId);
+    onAutocompleteChange(fromInputId);
+    onAutocompleteChange(toInputId);
     enableSubmitButtonOnDateChange();
 </script>
 </body>

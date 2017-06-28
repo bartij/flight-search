@@ -87,24 +87,6 @@ button[disabled]{
     color: #666666;
 }
 
-button[disabled]:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
-button .tooltiptext {
-    visibility: hidden;
-    width: 200px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -60px;
-    opacity: 0;
-    transition: opacity 1s 0.5s;
+input[type='text'].ui-autocomplete-loading {
+    background: white url('http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/images/ui-anim_basic_16x16.gif') no-repeat right center;
 }
