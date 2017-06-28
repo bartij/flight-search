@@ -12,9 +12,10 @@ const onSubmit = (event) => {
     const toId = '#to';
     const dateId = '#date';
     let { from, to, date } = getFormValues(fromId, toId, dateId);
+    const fromAirportName = getAirportName(from);
+    const toAirportName = getAirportName(to);
     from = getAirportCode(from);
     to = getAirportCode(to);
-    $('.flights-title').text(from + ' - ' + to);
 
     const now = new Date();
     now.setHours(0,0,0,0);
@@ -25,6 +26,7 @@ const onSubmit = (event) => {
         $('#results').hide();
         $('.no-flights').hide();
         $('.loader').show();
+        $('.flights-title').text(fromAirportName + ' - ' + toAirportName);
         $('button').prop('disabled', true);
         selectedFrom = false;
         selectedTo = false;
@@ -51,6 +53,8 @@ const getFormValues = (fromId, toId, dateId) => {
 };
 
 const getAirportCode = (airportLabel) => airportLabel.match(/\(([^)]+)\)/)[1];
+
+const getAirportName = (airportLabel) => airportLabel.split(',')[0];
 
 const setDatesOnTabs = dates =>
     dates.forEach((date, index) => $('#tab'+(index+1)).text(dates[index]));
@@ -99,24 +103,3 @@ const prepareFlightsData = flightsArray =>
         price: '$' + flight.price,
         duration: flight.duration
     }));
-
-const getSource = (request, response) => {
-    $.ajax({
-        type: 'GET',
-        url: '/airports/'+request.term
-    }).done(data => {
-        const airports = data.map(airport => airport.airportName + ', ' + airport.cityName + ' (' + airport.airportCode +')');
-        response(airports);
-    }).fail(onError);
-};
-
-const focusFromInput = () => {
-    $(document).ready(function() {
-        $('#from').focus();
-    });
-};
-
-const setMinDateLimit = () => {
-    const minDate = moment().format('YYYY-MM-DD')
-    $('#date').prop('min', minDate);
-};

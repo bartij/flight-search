@@ -156,18 +156,18 @@ describe('Helper functions', () => {
         }
     });
 
-    it('should create urls array with all possible combinations to search for flights', () => {
-        const airlines = [dummyAirlines[0]];
-        const dates = ['2017-07-02'];
-        const startAirports = dummyAirports;
-        const destinationAirports = [dummyAirports[0]];
-        const arrayWithUrls = helpers.createFlightsSearchUrls(airlines, dates, startAirports, destinationAirports);
+    it('should create urls array with all (30) possible combinations to search for flights', () => {
+        const airlines = dummyAirlines;
+        const dates = ['2017-07-02', '2017-07-03', '2017-07-04', '2017-07-05', '2017-07-06'];
+        const startAirport = dummyAirports[0];
+        const destinationAirport = dummyAirports[0];
+        const arrayWithUrls =
+            helpers.createFlightsSearchUrls(airlines, dates, startAirport.airportCode, destinationAirport.airportCode);
         const someFlightUrl = helpers.createFlightSearchUrl(
-                airlines[0].code, dates[0], startAirports[0].airportCode, destinationAirports[0].airportCode
+                airlines[0].code, dates[0], startAirport.airportCode, destinationAirport.airportCode
             );
-
         arrayWithUrls.should.be.a('array');
-        arrayWithUrls.length.should.be.eql(2);
+        arrayWithUrls.length.should.be.eql(30);
         arrayWithUrls.indexOf(someFlightUrl).should.be.greaterThan(-1);
     });
 
@@ -187,8 +187,8 @@ describe('Helper functions', () => {
         sinon.stub(request, 'get').withArgs(urls).returns(returnValue);
         const requests = helpers.prepareRequests(urls);
 
-        sinon.assert.calledTwice(request.get);
-        requests.length.should.be.eql(2);
+        sinon.assert.callCount(request.get, 6);
+        requests.length.should.be.eql(6);
     });
 
     it('should throw an error when empty array or no arguments is provided to prepareRequests', () => {

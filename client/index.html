@@ -27,6 +27,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="moment.min.js"></script>
     <script src="onSubmit.js"></script>
+    <script src="autocomplete.js"></script>
 </head>
 <body>
 <div class="row form-div">
@@ -122,21 +123,9 @@
     };
     $('#from').autocomplete(options);
     $('#to').autocomplete(options);
-    $('#from').on('autocompleteselect', () => {
-        selectedFrom = true;
-        if (selectedFrom && selectedTo) {
-            $('button').prop('disabled', false);
-        }
-    });
-    $('#to').on('autocompleteselect', () => {
-        selectedTo = true;
-        if (selectedFrom && selectedTo) {
-            $('button').prop('disabled', false);
-        }
-    });
-    $('#date').on('change', () => {
-        $('button').prop('disabled', false);
-    });
+    onAutocompleteSelect('#from');
+    onAutocompleteSelect('#to');
+    enableSubmitButtonOnDateChange();
 </script>
 </body>
 </html>
